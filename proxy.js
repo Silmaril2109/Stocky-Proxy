@@ -1,26 +1,23 @@
-const express = require("express");
-const axios = require("axios");
+const express = require('express');
+const cors = require('cors');
+const http = require('http');
 
 const app = express();
-const PORT = process.env.PORT || 3000;  // ✅ Use Render's assigned port
+app.use(cors());
 
-app.get("/stock", async (req, res) => {
+app.get('/stock', async (req, res) => {
     try {
-        const response = await axios.get(
-            "https://query1.finance.yahoo.com/v8/finance/chart/TATASTEEL.NS"
-        );
-        const stockData = response.data.chart.result[0].meta.regularMarketPrice;
-        res.json({ regularMarketPrice: stockData });
+        const response = await fetch('https://query1.finance.yahoo.com/v7/finance/quote?symbols=TATASTEEL.NS');
+        const data = await response.json();
+        const price = data.quoteResponse.result[0].regularMarketPrice;
+        res.json({ regularMarketPrice: price });
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch stock data" });
+        res.status(500).json({ error: "Failed to fetch stock price" });
     }
 });
 
-// Root route (optional)
-app.get("/", (req, res) => {
-    res.send("Stock Proxy Server is Running!");
-});
-
-app.listen(PORT, () => {
-    console.log(`Proxy server running on port ${PORT}`);
+// Force HTTP server instead of HTTPS
+const PORT = process.env.PORT || 3000;
+http.createServer(app).listen(PORT, () => {
+    console.log(`HTTP Proxy running on port ${PORT}`);
 });
