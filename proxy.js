@@ -2,9 +2,8 @@ const express = require("express");
 const axios = require("axios");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;  // ✅ Use Render's assigned port
 
-// Define a route for fetching stock data
 app.get("/stock", async (req, res) => {
     try {
         const response = await axios.get(
